@@ -14,15 +14,18 @@
 .routesdiv_admin {
   display: flex;
   flex-direction: row;
-  overflow: hidden;
+  
   width: auto;
-  height: 50rem;
+  
   border-bottom: 3px black solid;
 }
 textarea{
   resize: none;
 }
 
+button:hover {
+  cursor: pointer;
+}
 
 .mainphotosclass{
   display: none;
@@ -35,13 +38,15 @@ textarea{
 display: none;
   
 }
+/*
+
 
 
 /* .App {
   display: flex;
 } */
 
-.mainphotos {
+/*.mainphotos {
   height: 1000px;
   position: sticky;
   top: 0px;
@@ -53,9 +58,6 @@ display: none;
 }
 
 
-button:hover {
-  cursor: pointer;
-}
 
 @media (max-width: 1500px) {
   .mainphotosclass {
@@ -89,5 +91,5 @@ grid-template-columns: auto 69% 15%;
 
 .routesdiv{
   width: 600%;
-} */
+}  */
 
