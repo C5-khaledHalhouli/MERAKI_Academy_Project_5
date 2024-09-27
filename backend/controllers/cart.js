@@ -4,28 +4,16 @@ const AddToCart = (req, res) => {
   let check = false;
   let quantity = 1;
   const product_id = req.params.id;
-
   const user_id = req.token.user_id;
-
-  const query = `SELECT * FROM cart WHERE product_id=? AND WHERE IS_DELETED =0`;
+  const { price } = req.body;
+  const query = `select * from cart where product_id =? and is_deleted=0;`;
   const Data = [product_id];
+  console.log(check, quantity, quantity, product_id, user_id, Data);
   connection.query(query, Data, (err, result) => {
-    try {
-      if (result.length) {
-        check = true;
-        quantity = result[0].quantity;
-      }
-    } catch {
-      (err) => {
-        console.log(err);
-      };
-    }
-  });
-  setTimeout(() => {
-    if (check) {
+    if (result.length) {
       let newqunt = quantity + 1;
       const data = [newqunt, product_id, user_id];
-      const query = `UPDATE cart SET Quantity=? WHERE product_id=? AND user_id=? AND WHERE IS_DELETED=0`;
+      const query = `UPDATE cart SET Quantity=? WHERE product_id=? AND user_id=? AND is_deleted = 0`;
       connection.query(query, data, (err, resul) => {
         if (err) {
           return res.status(500).json({
@@ -41,8 +29,8 @@ const AddToCart = (req, res) => {
       });
     } else {
       const query =
-        "INSERT INTO cart (product_id,user_id,quantity) VALUES (?,?,?)";
-      const data = [product_id, user_id, quantity];
+        "INSERT INTO cart (product_id,user_id,quantity,price_checkout) VALUES (?,?,?,?)";
+      const data = [product_id, user_id, quantity, price];
       connection.query(query, data, (err, Result) => {
         if (err) {
           return res.status(500).json({
@@ -57,7 +45,42 @@ const AddToCart = (req, res) => {
         });
       });
     }
-  }, 100);
+  });
+};
+
+const AddToCartused = (req, res) => {
+  const product_id = req.params.usedpro;
+  const user_id = req.token.user_id;
+  console.log(product_id,user_id);
+  const query = `select * from usedproduct where used_product_id =? and is_deleted=0;`;
+  const Data = [product_id];
+  connection.query(query, Data, (err, result) => {
+    if (err) {
+      res.status(500).json({
+        succses: false,
+        err,
+      });
+    }
+    console.log(result);
+    const used_product_id = result[0].used_product_id;
+    const query =
+      "INSERT INTO cart (usedproduct_id,user_id,price_checkout) VALUES (?,?,?)";
+    const price_checkout = result[0].asking_price;
+    const data = [used_product_id, user_id, price_checkout];
+    connection.query(query, data, (err, Result) => {
+      if (err) {
+        return res.status(500).json({
+          succses: false,
+          Message: "server error",
+          err,
+        });
+      }
+      res.status(201).json({
+        succses: true,
+        Result,
+      });
+    });
+  });
 };
 
 const deletecart = (req, res) => {
@@ -81,6 +104,36 @@ const deletecart = (req, res) => {
   });
 };
 
+
+
+const deletecartused = (req, res) => {
+  const product_id = req.params.id;
+  const user_id = req.token.user_id;
+  const query = "DELETE FROM cart WHERE usedproduct_id = ? AND user_id=?  ";
+  const Data = [product_id, user_id];
+  connection.query(query, Data, (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        succses: false,
+        Message: "sever error",
+        err: err,
+      });
+    }
+    res.status(200).json({
+      succses: true,
+      Message: "delete product from cart",
+      result: result,
+    });
+  });
+};
+
+
+
+
+
+
+
+
 const getUserCarts = (req, res) => {
   const user_id = req.token.user_id;
   const query = `SELECT * FROM cart INNER JOIN PRODUCTS ON CART.product_id =PRODUCTS.PRODUCT_ID  WHERE CART.is_deleted = 0 AND cart.user_id=?`;
@@ -99,9 +152,31 @@ const getUserCarts = (req, res) => {
     });
   });
 };
+
+const getUserCartsprodact = (req, res) => {
+  const user_id = req.token.user_id;
+  console.log(user_id);
+  const query = `SELECT * FROM cart INNER JOIN usedproduct ON CART.usedproduct_id =usedproduct.used_product_id WHERE CART.is_deleted = 0 AND cart.user_id=?`;
+  const data = [user_id];
+  connection.query(query, data, (err, result) => {
+    if (err) {
+      return res.status(500).json({
+        succses: false,
+        Message: "server error",
+        err,
+      });
+    }
+    res.status(200).json({
+      succses: true,
+      result,
+    });
+  });
+};
+
 const checkOut = async (req, res) => {
   const user_id = req.token.user_id;
-  const { arrayCheckout } = req.body;
+  const { arrayCheckout, date } = req.body;
+
   const data = [user_id];
 
   const query = `UPDATE cart SET is_deleted = 1 WHERE user_id=?`;
@@ -116,13 +191,30 @@ const checkOut = async (req, res) => {
   });
   arrayCheckout &&
     arrayCheckout.forEach((element) => {
-      const data2 = [+element.quantity, element.product_id];
-      const query2 =
+      const data = [+element.quantity, element.product_id];
+      const query =
         "UPDATE products SET Store_Quantity=Store_Quantity-? WHERE product_id=? AND IS_DELETED =0";
+      connection.query(query, data, (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log({ succ: true, result });
+      });
+      const query2 =
+        "INSERT INTO sold(sold_price,title,price_buy,quantity,date,product_Id) values(?,?,?,?,?,?)";
+      const data2 = [
+        element.price,
+        element.title,
+        element.buy_price,
+        element.quantity,
+        date,
+        element.product_id,
+      ];
       connection.query(query2, data2, (err, result) => {
         if (err) {
           console.log(err);
         }
+        res.status(200).json({ succ: true, result });
       });
     });
 };
@@ -146,10 +238,72 @@ const updateQuantity = (req, res) => {
   });
 };
 
+const getallcarts = (req, res) => {
+  const query = `SELECT * FROM cart INNER JOIN PRODUCTS ON CART.product_id =PRODUCTS.PRODUCT_ID INNER JOIN sub_categories ON  PRODUCTS.sub_category=sub_categories.subCategory_id INNER JOIN users ON users.user_id=cart.user_id WHERE CART.is_deleted = 1`;
+  connection.query(query, (err, result) => {
+    if (err) {
+      res.status(500).json({
+        succses: false,
+        Message: err,
+      });
+    }
+    res.json({
+      succses: true,
+      result,
+    });
+  });
+};
+
+const addtosold = (req, res) => {
+  const product_Id = req.params.product_id;
+  const { title, quantity, price, date } = req.body;
+  const data = [title, price, date];
+  const query = "SELECT * FROM sold WHERE TITLE=? AND PRICE=? AND DATE=?";
+  connection.query(query, data, (err, reslt) => {
+    if (!reslt) {
+      const data = [title, price, product_Id, quantity, date];
+      const query = "INSERT INTO cart (title,price,product_Id,quantity,date)";
+      connection.query(query, data, (err, reslt1) => {
+        if (err) {
+          res.json({
+            stats: false,
+            Message: "err while adding new iteam",
+          });
+        }
+        res.status(201).json({
+          succses: true,
+          reslt1,
+        });
+      });
+    }
+    const data = [quantity, title, price, date];
+    const query =
+      "UPDATE sold SET quantity=quantity+? WHERE TITLE=? AND PRICE=? AND DATE=?";
+    connection.query(query, data, (err, result3) => {
+      if (err) {
+        res.json({ err });
+      }
+      res.status(203).json({
+        succses: true,
+        result3,
+      });
+    });
+  });
+};
+
+
+
+
+
 module.exports = {
   AddToCart,
   deletecart,
   getUserCarts,
   checkOut,
   updateQuantity,
+  getallcarts,
+  addtosold,
+  AddToCartused,
+  getUserCartsprodact,
+  deletecartused
 };

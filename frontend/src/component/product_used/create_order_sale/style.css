@@ -1,0 +1,127 @@
+
+
+
+
+
+
+
+
+
+
+
+ .contener_ordersale{
+    display: flex;
+    justify-content: left;
+    /* align-items: center; */
+   padding: 3rem 0;
+}
+.Salesorderfilling{
+    padding: 0 1.5rem;
+    margin-right: 2rem;
+    width: 50%;
+    
+}
+.Salesorderfilling h1{
+border-bottom: 1px solid  #b11616;
+width: fit-content;
+padding-bottom: 0.5rem;
+}
+.Salesorderfilling h1 span{
+    color:  #b11616;
+}
+.Salesorderfilling p{
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    font-weight: 600;
+    line-height: 2.3rem;
+}
+.Salesorderfilling p span{
+    color: #b11616 ;
+}
+.contener_ordersale .form_ordersale{
+   
+   
+padding: 0;
+
+}
+.titel_order {
+   width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 7px;
+    font-size: 1.7rem;
+    font-weight: 600;
+    background: #0B4579;
+    color: white;
+}
+
+.form_ordersale label{
+    display: block;
+    font-size: 1.7rem;
+    font-weight: 700;
+}
+
+.form_ordersale input{
+    width: 30rem;
+    padding: 0.3rem 0;
+    font-size: 1.5rem;
+}
+
+.productused_name {
+    padding: 7px;
+}
+.category_select{
+    padding: 7px;
+}
+.category_select select{
+   height: 1.7rem;
+   font-size: 1.5rem;
+}
+.product_used_description{
+    padding: 7px;
+}
+.img_url_contener{
+    padding: 7px;
+}
+.asking_price{
+    padding: 7px;
+}
+.bank_account{
+    padding: 7px;
+}
+.phone_number{
+    padding: 7px;
+}
+.sen_buttoun{
+    padding: 7px;
+    text-align: center;
+    
+}
+.sen_buttoun button{
+    background: white;
+    color: black;
+    border-radius: 3px;
+    font-size: 2rem;
+    width: 7rem;
+    margin-left: 1rem;
+    height: 2.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 300px;
+    height: 70px;
+    background-color: #b11616;
+    border: 0ch;
+    font-size: 23px;
+    color: white;
+}
+.message_user{
+    text-align: center;
+   
+    padding: 7px;
+}
+.product_used_description textarea{
+    width: 30rem;
+    font-size: 1.5rem;
+  
+   height: 5rem;
+} 
